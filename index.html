@@ -631,7 +631,7 @@
       </table>
     </div>
 
-    <p class="target-note">Formula: (Agreements ÷ (Agreements + Disagreements)) × 100 · Target: ≥ 85%</p>
+    <p class="target-note">Formula: per metric, Agreement = min(your count, gold count), Disagreement = |your count − gold count|. Reliability = ΣAgreements ÷ (ΣAgreements + ΣDisagreements) × 100 · Target: ≥ 85%</p>
 
     <button class="reset-btn" onclick="resetForm()">↩ Enter New Answers</button>
 
@@ -758,12 +758,16 @@ function buildInputRows() {
 
 function safe(s) { return s.replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_]/g,''); }
 
-/* ── Reliability formula ── */
-function reliability(observer, gold) {
-  // Per-metric: agreement = exact match (1) or disagreement (0)
-  // Proportional agreement = agreements / (agreements + disagreements)
-  const agree = observer === gold ? 1 : 0;
-  return agree * 100; // 100 or 0 per cell
+/* ── Reliability formula ──
+   Per metric: agreement = min(observed, gold), disagreement = |observed - gold|.
+   Team reliability = ΣAgreements / (ΣAgreements + ΣDisagreements) × 100, summed across all metrics.
+   This gives proportional credit for close counts instead of only crediting exact matches. */
+function metricStats(obs, gold) {
+  const agreement = Math.min(obs, gold);
+  const disagreement = Math.abs(obs - gold);
+  const denom = agreement + disagreement;
+  const pct = denom === 0 ? 100 : (agreement / denom) * 100; // both 0 = perfect agreement
+  return { agreement, disagreement, pct };
 }
 
 function checkAlignment() {
@@ -777,21 +781,23 @@ function checkAlignment() {
     obs.team2[m] = parseInt(document.getElementById('t2_' + safe(m)).value) || 0;
   });
 
-  // Calculate per-metric reliability
-  let agreementsT1 = 0, agreementsT2 = 0;
+  // Calculate per-metric agreement / disagreement, then sum across all metrics
+  let agreeT1 = 0, disagreeT1 = 0, agreeT2 = 0, disagreeT2 = 0;
   const rowData = METRICS.map(m => {
-    const a1 = obs.team1[m] === gs.team1[m] ? 1 : 0;
-    const a2 = obs.team2[m] === gs.team2[m] ? 1 : 0;
-    agreementsT1 += a1;
-    agreementsT2 += a2;
+    const s1 = metricStats(obs.team1[m], gs.team1[m]);
+    const s2 = metricStats(obs.team2[m], gs.team2[m]);
+    agreeT1 += s1.agreement; disagreeT1 += s1.disagreement;
+    agreeT2 += s2.agreement; disagreeT2 += s2.disagreement;
     return { metric: m, obs1: obs.team1[m], obs2: obs.team2[m],
              gs1: gs.team1[m], gs2: gs.team2[m],
-             pct1: a1 * 100, pct2: a2 * 100 };
+             pct1: s1.pct, pct2: s2.pct };
   });
 
-  const relT1 = (agreementsT1 / METRICS.length) * 100;
-  const relT2 = (agreementsT2 / METRICS.length) * 100;
-  const overall = (agreementsT1 + agreementsT2) / (METRICS.length * 2) * 100;
+  const relT1 = (agreeT1 + disagreeT1) === 0 ? 100 : (agreeT1 / (agreeT1 + disagreeT1)) * 100;
+  const relT2 = (agreeT2 + disagreeT2) === 0 ? 100 : (agreeT2 / (agreeT2 + disagreeT2)) * 100;
+  const totalAgree = agreeT1 + agreeT2;
+  const totalDisagree = disagreeT1 + disagreeT2;
+  const overall = (totalAgree + totalDisagree) === 0 ? 100 : (totalAgree / (totalAgree + totalDisagree)) * 100;
 
   // ── Render results ──
   document.getElementById('results-title').textContent = name + "'s Results";
@@ -832,14 +838,14 @@ function checkAlignment() {
         <div class="cell-group">
           <span class="your-val">${r.obs1}</span>
           <span class="gs-val">GS: ${r.gs1}</span>
-          <span class="pct-pill ${r.pct1 >= 85 ? 'pass' : 'fail'}">${r.pct1 === 100 ? '✓' : '✗'}</span>
+          <span class="pct-pill ${r.pct1 >= 85 ? 'pass' : 'fail'}">${r.pct1 === 100 ? '✓' : r.pct1.toFixed(0) + '%'}</span>
         </div>
       </td>
       <td>
         <div class="cell-group">
           <span class="your-val">${r.obs2}</span>
           <span class="gs-val">GS: ${r.gs2}</span>
-          <span class="pct-pill ${r.pct2 >= 85 ? 'pass' : 'fail'}">${r.pct2 === 100 ? '✓' : '✗'}</span>
+          <span class="pct-pill ${r.pct2 >= 85 ? 'pass' : 'fail'}">${r.pct2 === 100 ? '✓' : r.pct2.toFixed(0) + '%'}</span>
         </div>
       </td>
     `;
