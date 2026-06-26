@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Observer Alignment Check</title>
+<style>
+  /* ============================================================
+     GOLD STANDARD CONFIG — EDIT THIS SECTION TO UPDATE ANSWERS
+     ============================================================
+     To update for the Live Match segment:
+     1. Find GOLD_STANDARD below in the <script> section
+     2. Replace the values for SESSION_2
+     3. Save the file and re-share / re-upload
+     ============================================================ */
+
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600;700&display=swap');
+
+  :root {
+    --pitch-dark: #0d1f13;
+    --pitch-mid: #152b1c;
+    --pitch-stripe: #1a3322;
+    --grass: #2d6a4f;
+    --lime: #95d44a;
+    --lime-muted: #6fa832;
+    --white: #f0f4f0;
+    --off-white: #dce8dc;
+    --amber: #f5a623;
+    --red: #e84040;
+    --red-dark: #a82828;
+    --card-bg: #192e20;
+    --card-border: #2a4a34;
+    --input-bg: #0f2016;
+    --text-muted: #7a9e82;
+    --font-display: 'DM Sans', sans-serif;
+    --font-mono: 'DM Mono', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background-color: var(--pitch-dark);
+    background-image:
+      repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 60px,
+        rgba(255,255,255,0.012) 60px,
+        rgba(255,255,255,0.012) 61px
+      ),
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 60px,
+        rgba(255,255,255,0.012) 60px,
+        rgba(255,255,255,0.012) 61px
+      );
+    color: var(--white);
+    font-family: var(--font-display);
+    min-height: 100vh;
+    padding: 0 0 60px;
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--pitch-mid);
+    border-bottom: 2px solid var(--grass);
+    padding: 24px 32px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .pitch-icon {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+  }
+
+  header h1 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--white);
+    line-height: 1.2;
+  }
+
+  header p {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    margin-top: 2px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  /* ── Session Toggle ── */
+  .session-bar {
+    background: var(--pitch-stripe);
+    border-bottom: 1px solid var(--card-border);
+    padding: 12px 32px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .session-label {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    flex-shrink: 0;
+  }
+
+  .session-toggle {
+    display: flex;
+    gap: 6px;
+  }
+
+  .session-btn {
+    background: var(--input-bg);
+    border: 1px solid var(--card-border);
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    padding: 6px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .session-btn.active {
+    background: var(--grass);
+    border-color: var(--lime);
+    color: var(--white);
+    font-weight: 500;
+  }
+
+  .session-btn:hover:not(.active) {
+    border-color: var(--grass);
+    color: var(--off-white);
+  }
+
+  /* ── Main Container ── */
+  main {
+    max-width: 820px;
+    margin: 32px auto;
+    padding: 0 20px;
+  }
+
+  /* ── Name Field ── */
+  .name-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .name-card label {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    flex-shrink: 0;
+  }
+
+  .name-card input {
+    flex: 1;
+    background: var(--input-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 6px;
+    color: var(--white);
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 500;
+    padding: 10px 14px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+
+  .name-card input:focus { border-color: var(--lime); }
+  .name-card input::placeholder { color: var(--text-muted); }
+
+  /* ── Session Banner ── */
+  .session-banner {
+    background: var(--pitch-stripe);
+    border: 1px solid var(--card-border);
+    border-left: 4px solid var(--lime);
+    border-radius: 8px;
+    padding: 12px 18px;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .session-banner .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--lime);
+    animation: pulse 2s infinite;
+    flex-shrink: 0;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .session-banner span {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--off-white);
+    letter-spacing: 0.04em;
+  }
+
+  /* ── Input Table ── */
+  .table-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+
+  .table-card table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .table-card thead tr {
+    background: var(--pitch-stripe);
+    border-bottom: 2px solid var(--grass);
+  }
+
+  .table-card th {
+    padding: 12px 16px;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    font-weight: 500;
+    text-align: left;
+  }
+
+  .table-card th:not(:first-child) { text-align: center; }
+
+  .table-card tbody tr {
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    transition: background 0.1s;
+  }
+
+  .table-card tbody tr:hover { background: rgba(255,255,255,0.02); }
+  .table-card tbody tr:last-child { border-bottom: none; }
+
+  .table-card td {
+    padding: 10px 16px;
+    font-size: 0.88rem;
+  }
+
+  .metric-name {
+    color: var(--off-white);
+    font-weight: 500;
+  }
+
+  .metric-name small {
+    display: block;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    font-weight: 400;
+    margin-top: 1px;
+  }
+
+  .table-card td:not(:first-child) { text-align: center; }
+
+  /* ── Number Inputs ── */
+  input[type="number"] {
+    background: var(--input-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 5px;
+    color: var(--white);
+    font-family: var(--font-mono);
+    font-size: 0.95rem;
+    padding: 7px 0;
+    text-align: center;
+    width: 72px;
+    outline: none;
+    transition: border-color 0.15s, background 0.15s;
+    -moz-appearance: textfield;
+  }
+
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+  input[type="number"]:focus { border-color: var(--lime); background: #0d1a10; }
+
+  /* ── Check Button ── */
+  .btn-check {
+    width: 100%;
+    background: var(--grass);
+    border: none;
+    border-radius: 10px;
+    color: var(--white);
+    cursor: pointer;
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    padding: 18px;
+    transition: background 0.15s, transform 0.1s;
+    margin-bottom: 32px;
+  }
+
+  .btn-check:hover { background: #357a57; }
+  .btn-check:active { transform: scale(0.99); }
+
+  /* ── Results Panel ── */
+  #results { display: none; }
+
+  .results-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .results-header h2 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: -0.02em;
+  }
+
+  .overall-badge {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--pitch-stripe);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    padding: 10px 18px;
+  }
+
+  .overall-score {
+    font-family: var(--font-mono);
+    font-size: 1.8rem;
+    font-weight: 500;
+    line-height: 1;
+  }
+
+  .overall-score.pass { color: var(--lime); }
+  .overall-score.fail { color: var(--red); }
+
+  .overall-label {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    line-height: 1.4;
+  }
+
+  /* ── Results Table ── */
+  .results-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .results-card table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .results-card thead tr {
+    background: var(--pitch-stripe);
+    border-bottom: 2px solid var(--grass);
+  }
+
+  .results-card th {
+    padding: 11px 14px;
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    font-weight: 500;
+    text-align: left;
+  }
+
+  .results-card th:not(:first-child) { text-align: center; }
+
+  .results-card tbody tr {
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .results-card tbody tr:last-child { border-bottom: none; }
+
+  .results-card td {
+    padding: 10px 14px;
+    font-size: 0.84rem;
+  }
+
+  .results-card td:not(:first-child) { text-align: center; }
+
+  .cell-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .your-val {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    color: var(--white);
+  }
+
+  .gs-val {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: var(--text-muted);
+  }
+
+  .pct-pill {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    font-weight: 500;
+    padding: 3px 10px;
+    border-radius: 20px;
+  }
+
+  .pct-pill.pass { background: rgba(149,212,74,0.15); color: var(--lime); }
+  .pct-pill.fail { background: rgba(232,64,64,0.15); color: var(--red); }
+
+  /* ── Team Summary ── */
+  .team-summary {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .team-card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .team-score-big {
+    font-family: var(--font-mono);
+    font-size: 2.2rem;
+    font-weight: 500;
+    line-height: 1;
+  }
+
+  .team-score-big.pass { color: var(--lime); }
+  .team-score-big.fail { color: var(--red); }
+
+  .team-info .name {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--off-white);
+    margin-bottom: 2px;
+  }
+
+  .team-info .verdict {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .team-info .verdict.pass { color: var(--lime); }
+  .team-info .verdict.fail { color: var(--red); }
+
+  /* ── Target Note ── */
+  .target-note {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: 8px;
+  }
+
+  /* ── Reset Link ── */
+  .reset-btn {
+    display: block;
+    text-align: center;
+    background: none;
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    padding: 12px;
+    width: 100%;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    transition: all 0.15s;
+    margin-top: 16px;
+  }
+
+  .reset-btn:hover { border-color: var(--grass); color: var(--off-white); }
+
+  /* ── Footer ── */
+  footer {
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    letter-spacing: 0.06em;
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid var(--card-border);
+  }
+
+  @media (max-width: 500px) {
+    header { padding: 16px; }
+    .session-bar { padding: 10px 16px; }
+    main { padding: 0 12px; }
+    .team-summary { grid-template-columns: 1fr; }
+    input[type="number"] { width: 60px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <svg class="pitch-icon" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect width="44" height="44" rx="8" fill="#2d6a4f"/>
+    <rect x="4" y="4" width="36" height="36" rx="3" stroke="#95d44a" stroke-width="1.5" fill="none"/>
+    <line x1="22" y1="4" x2="22" y2="40" stroke="#95d44a" stroke-width="1"/>
+    <circle cx="22" cy="22" r="7" stroke="#95d44a" stroke-width="1" fill="none"/>
+    <circle cx="22" cy="22" r="1.5" fill="#95d44a"/>
+    <rect x="4" y="16" width="6" height="12" rx="1" stroke="#95d44a" stroke-width="1" fill="none"/>
+    <rect x="34" y="16" width="6" height="12" rx="1" stroke="#95d44a" stroke-width="1" fill="none"/>
+  </svg>
+  <div>
+    <h1>Observer Alignment Check</h1>
+    <p>Mile High Soccer Symposium</p>
+  </div>
+</header>
+
+<div class="session-bar">
+  <span class="session-label">Session</span>
+  <div class="session-toggle">
+    <button class="session-btn active" onclick="setSession(1)" id="btn-s1">① Training</button>
+    <button class="session-btn" onclick="setSession(2)" id="btn-s2">② Live Match</button>
+  </div>
+</div>
+
+<main>
+
+  <div class="name-card">
+    <label for="observer-name">Observer</label>
+    <input type="text" id="observer-name" placeholder="Type your name here" autocomplete="off">
+  </div>
+
+  <div class="session-banner">
+    <div class="dot"></div>
+    <span id="session-label-text">Session 1 — Training Clip · Rising Edge FC vs Academix United</span>
+  </div>
+
+  <div class="table-card">
+    <table>
+      <thead>
+        <tr>
+          <th>Metric</th>
+          <th id="th-team1">Rising Edge FC<br><small style="font-size:0.6rem;color:#4a7a54;">(White)</small></th>
+          <th id="th-team2">Academix United<br><small style="font-size:0.6rem;color:#4a7a54;">(Red)</small></th>
+        </tr>
+      </thead>
+      <tbody id="input-rows">
+        <!-- Rows injected by JS -->
+      </tbody>
+    </table>
+  </div>
+
+  <button class="btn-check" onclick="checkAlignment()">▶ Check My Alignment</button>
+
+  <!-- ── RESULTS ── -->
+  <div id="results">
+
+    <div class="results-header">
+      <h2 id="results-title">Your Results</h2>
+      <div class="overall-badge">
+        <div>
+          <div class="overall-score" id="overall-score">—</div>
+        </div>
+        <div class="overall-label">Overall<br>Reliability</div>
+      </div>
+    </div>
+
+    <div class="team-summary" id="team-summary">
+      <!-- injected -->
+    </div>
+
+    <div class="results-card">
+      <table>
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th id="rth-team1">Rising Edge FC</th>
+            <th id="rth-team2">Academix United</th>
+          </tr>
+        </thead>
+        <tbody id="results-rows"></tbody>
+      </table>
+    </div>
+
+    <p class="target-note">Formula: (Agreements ÷ (Agreements + Disagreements)) × 100 · Target: ≥ 85%</p>
+
+    <button class="reset-btn" onclick="resetForm()">↩ Enter New Answers</button>
+
+  </div>
+
+</main>
+
+<footer>
+  Observer Alignment Check · Mile High Soccer Symposium LLC
+</footer>
+
+<script>
+/* ================================================================
+   ██████  GOLD STANDARD — EDIT HERE TO UPDATE ANSWERS  ██████
+   ================================================================
+   Each session has: { team1: { METRIC: value }, team2: { ... } }
+   Metric keys must match METRICS array below exactly.
+   ================================================================ */
+
+const GOLD_STANDARD = {
+  1: {
+    // SESSION 1 — Training Clip
+    team1: {
+      "Successful Passes":    8,
+      "Unsuccessful Passes":  4,
+      "Crosses":              0,
+      "Shots On Target":      1,
+      "Shots Wide":           0,
+      "Interceptions":        2,
+      "Tackles":              0,
+    },
+    team2: {
+      "Successful Passes":    20,
+      "Unsuccessful Passes":  6,
+      "Crosses":              1,
+      "Shots On Target":      1,
+      "Shots Wide":           0,
+      "Interceptions":        1,
+      "Tackles":              0,
+    },
+    team1Name: "Rising Edge FC",
+    team2Name: "Academix United",
+    description: "Session 1 — Training Clip · Rising Edge FC vs Academix United"
+  },
+  2: {
+    // SESSION 2 — Live Match (France vs Norway, 22-min segment)
+    // ↓↓↓ REPLACE THESE VALUES AFTER THE LIVE MATCH SEGMENT ↓↓↓
+    team1: {
+      "Successful Passes":    0,
+      "Unsuccessful Passes":  0,
+      "Crosses":              0,
+      "Shots On Target":      0,
+      "Shots Wide":           0,
+      "Interceptions":        0,
+      "Tackles":              0,
+    },
+    team2: {
+      "Successful Passes":    0,
+      "Unsuccessful Passes":  0,
+      "Crosses":              0,
+      "Shots On Target":      0,
+      "Shots Wide":           0,
+      "Interceptions":        0,
+      "Tackles":              0,
+    },
+    team1Name: "France",
+    team2Name: "Norway",
+    description: "Session 2 — Live Match Segment · France vs Norway (2nd Half, 22 min)"
+  }
+};
+
+/* ================================================================
+   METRICS — order controls display order in both tables
+   ================================================================ */
+const METRICS = [
+  "Successful Passes",
+  "Unsuccessful Passes",
+  "Crosses",
+  "Shots On Target",
+  "Shots Wide",
+  "Interceptions",
+  "Tackles",
+];
+
+/* ── State ── */
+let currentSession = 1;
+
+function setSession(n) {
+  currentSession = n;
+  document.getElementById('btn-s1').classList.toggle('active', n === 1);
+  document.getElementById('btn-s2').classList.toggle('active', n === 2);
+  const gs = GOLD_STANDARD[n];
+  document.getElementById('session-label-text').textContent = gs.description;
+  document.getElementById('th-team1').innerHTML = gs.team1Name + '<br><small style="font-size:0.6rem;color:#4a7a54;">(Team 1)</small>';
+  document.getElementById('th-team2').innerHTML = gs.team2Name + '<br><small style="font-size:0.6rem;color:#4a7a54;">(Team 2)</small>';
+  buildInputRows();
+  document.getElementById('results').style.display = 'none';
+}
+
+/* ── Build input table rows ── */
+function buildInputRows() {
+  const tbody = document.getElementById('input-rows');
+  tbody.innerHTML = '';
+  METRICS.forEach(m => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="metric-name">${m}</td>
+      <td><input type="number" min="0" id="t1_${safe(m)}" placeholder="—"></td>
+      <td><input type="number" min="0" id="t2_${safe(m)}" placeholder="—"></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function safe(s) { return s.replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_]/g,''); }
+
+/* ── Reliability formula ── */
+function reliability(observer, gold) {
+  // Per-metric: agreement = exact match (1) or disagreement (0)
+  // Proportional agreement = agreements / (agreements + disagreements)
+  const agree = observer === gold ? 1 : 0;
+  return agree * 100; // 100 or 0 per cell
+}
+
+function checkAlignment() {
+  const name = document.getElementById('observer-name').value.trim() || 'Observer';
+  const gs = GOLD_STANDARD[currentSession];
+
+  // Collect observer values
+  const obs = { team1: {}, team2: {} };
+  METRICS.forEach(m => {
+    obs.team1[m] = parseInt(document.getElementById('t1_' + safe(m)).value) || 0;
+    obs.team2[m] = parseInt(document.getElementById('t2_' + safe(m)).value) || 0;
+  });
+
+  // Calculate per-metric reliability
+  let agreementsT1 = 0, agreementsT2 = 0;
+  const rowData = METRICS.map(m => {
+    const a1 = obs.team1[m] === gs.team1[m] ? 1 : 0;
+    const a2 = obs.team2[m] === gs.team2[m] ? 1 : 0;
+    agreementsT1 += a1;
+    agreementsT2 += a2;
+    return { metric: m, obs1: obs.team1[m], obs2: obs.team2[m],
+             gs1: gs.team1[m], gs2: gs.team2[m],
+             pct1: a1 * 100, pct2: a2 * 100 };
+  });
+
+  const relT1 = (agreementsT1 / METRICS.length) * 100;
+  const relT2 = (agreementsT2 / METRICS.length) * 100;
+  const overall = (agreementsT1 + agreementsT2) / (METRICS.length * 2) * 100;
+
+  // ── Render results ──
+  document.getElementById('results-title').textContent = name + "'s Results";
+  document.getElementById('rth-team1').textContent = gs.team1Name;
+  document.getElementById('rth-team2').textContent = gs.team2Name;
+
+  // Overall badge
+  const scoreEl = document.getElementById('overall-score');
+  scoreEl.textContent = overall.toFixed(0) + '%';
+  scoreEl.className = 'overall-score ' + (overall >= 85 ? 'pass' : 'fail');
+
+  // Team summary cards
+  document.getElementById('team-summary').innerHTML = `
+    <div class="team-card">
+      <div class="team-score-big ${relT1 >= 85 ? 'pass' : 'fail'}">${relT1.toFixed(0)}%</div>
+      <div class="team-info">
+        <div class="name">${gs.team1Name}</div>
+        <div class="verdict ${relT1 >= 85 ? 'pass' : 'fail'}">${relT1 >= 85 ? '✓ Aligned' : '✗ Below Target'}</div>
+      </div>
+    </div>
+    <div class="team-card">
+      <div class="team-score-big ${relT2 >= 85 ? 'pass' : 'fail'}">${relT2.toFixed(0)}%</div>
+      <div class="team-info">
+        <div class="name">${gs.team2Name}</div>
+        <div class="verdict ${relT2 >= 85 ? 'pass' : 'fail'}">${relT2 >= 85 ? '✓ Aligned' : '✗ Below Target'}</div>
+      </div>
+    </div>
+  `;
+
+  // Per-metric table
+  const rbody = document.getElementById('results-rows');
+  rbody.innerHTML = '';
+  rowData.forEach(r => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="metric-name">${r.metric}</td>
+      <td>
+        <div class="cell-group">
+          <span class="your-val">${r.obs1}</span>
+          <span class="gs-val">GS: ${r.gs1}</span>
+          <span class="pct-pill ${r.pct1 >= 85 ? 'pass' : 'fail'}">${r.pct1 === 100 ? '✓' : '✗'}</span>
+        </div>
+      </td>
+      <td>
+        <div class="cell-group">
+          <span class="your-val">${r.obs2}</span>
+          <span class="gs-val">GS: ${r.gs2}</span>
+          <span class="pct-pill ${r.pct2 >= 85 ? 'pass' : 'fail'}">${r.pct2 === 100 ? '✓' : '✗'}</span>
+        </div>
+      </td>
+    `;
+    rbody.appendChild(tr);
+  });
+
+  document.getElementById('results').style.display = 'block';
+  document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function resetForm() {
+  METRICS.forEach(m => {
+    document.getElementById('t1_' + safe(m)).value = '';
+    document.getElementById('t2_' + safe(m)).value = '';
+  });
+  document.getElementById('results').style.display = 'none';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ── Init ── */
+buildInputRows();
+</script>
+</body>
+</html>
