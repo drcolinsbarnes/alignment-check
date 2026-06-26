@@ -640,7 +640,7 @@
 </main>
 
 <footer>
-  Observer Alignment Check · Mile High Soccer Symposium LLC
+  Observer Alignment Check · Mile High Soccer Symposium
 </footer>
 
 <script>
@@ -655,22 +655,26 @@ const GOLD_STANDARD = {
   1: {
     // SESSION 1 — Training Clip
     team1: {
-      "Successful Passes":    8,
-      "Unsuccessful Passes":  4,
-      "Crosses":              0,
-      "Shots On Target":      1,
-      "Shots Wide":           0,
-      "Interceptions":        2,
-      "Tackles":              0,
+      "Successful Passes":      8,
+      "Unsuccessful Passes":    4,
+      "Successful Crosses":     0,
+      "Unsuccessful Crosses":   0,
+      "Shots On Target":        1,
+      "Shots Off Target":       0,
+      "Interceptions":          2,
+      "Successful Tackles":     0,
+      "Unsuccessful Tackles":   1,
     },
     team2: {
-      "Successful Passes":    20,
-      "Unsuccessful Passes":  6,
-      "Crosses":              1,
-      "Shots On Target":      1,
-      "Shots Wide":           0,
-      "Interceptions":        1,
-      "Tackles":              0,
+      "Successful Passes":      20,
+      "Unsuccessful Passes":    6,
+      "Successful Crosses":     1,
+      "Unsuccessful Crosses":   0,
+      "Shots On Target":        1,
+      "Shots Off Target":       0,
+      "Interceptions":          1,
+      "Successful Tackles":     1,
+      "Unsuccessful Tackles":   0,
     },
     team1Name: "Rising Edge FC",
     team2Name: "Academix United",
@@ -680,22 +684,26 @@ const GOLD_STANDARD = {
     // SESSION 2 — Live Match (France vs Norway, 22-min segment)
     // ↓↓↓ REPLACE THESE VALUES AFTER THE LIVE MATCH SEGMENT ↓↓↓
     team1: {
-      "Successful Passes":    0,
-      "Unsuccessful Passes":  0,
-      "Crosses":              0,
-      "Shots On Target":      0,
-      "Shots Wide":           0,
-      "Interceptions":        0,
-      "Tackles":              0,
+      "Successful Passes":      0,
+      "Unsuccessful Passes":    0,
+      "Successful Crosses":     0,
+      "Unsuccessful Crosses":   0,
+      "Shots On Target":        0,
+      "Shots Off Target":       0,
+      "Interceptions":          0,
+      "Successful Tackles":     0,
+      "Unsuccessful Tackles":   0,
     },
     team2: {
-      "Successful Passes":    0,
-      "Unsuccessful Passes":  0,
-      "Crosses":              0,
-      "Shots On Target":      0,
-      "Shots Wide":           0,
-      "Interceptions":        0,
-      "Tackles":              0,
+      "Successful Passes":      0,
+      "Unsuccessful Passes":    0,
+      "Successful Crosses":     0,
+      "Unsuccessful Crosses":   0,
+      "Shots On Target":        0,
+      "Shots Off Target":       0,
+      "Interceptions":          0,
+      "Successful Tackles":     0,
+      "Unsuccessful Tackles":   0,
     },
     team1Name: "France",
     team2Name: "Norway",
@@ -709,11 +717,13 @@ const GOLD_STANDARD = {
 const METRICS = [
   "Successful Passes",
   "Unsuccessful Passes",
-  "Crosses",
+  "Successful Crosses",
+  "Unsuccessful Crosses",
   "Shots On Target",
-  "Shots Wide",
+  "Shots Off Target",
   "Interceptions",
-  "Tackles",
+  "Successful Tackles",
+  "Unsuccessful Tackles",
 ];
 
 /* ── State ── */
