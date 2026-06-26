@@ -760,13 +760,18 @@ function safe(s) { return s.replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_]/g,''); }
 
 /* ── Reliability formula ──
    Per metric: agreement = min(observed, gold), disagreement = |observed - gold|.
-   Team reliability = ΣAgreements / (ΣAgreements + ΣDisagreements) × 100, summed across all metrics.
-   This gives proportional credit for close counts instead of only crediting exact matches. */
+   Special case: if both observer and gold standard recorded 0 (nothing happened),
+   that is itself a correct identification — counts as 1 agreement, 0 disagreement,
+   NOT a null/zero contribution to the totals.
+   Team reliability = ΣAgreements / (ΣAgreements + ΣDisagreements) × 100, summed across all metrics. */
 function metricStats(obs, gold) {
+  if (obs === 0 && gold === 0) {
+    return { agreement: 1, disagreement: 0, pct: 100 };
+  }
   const agreement = Math.min(obs, gold);
   const disagreement = Math.abs(obs - gold);
   const denom = agreement + disagreement;
-  const pct = denom === 0 ? 100 : (agreement / denom) * 100; // both 0 = perfect agreement
+  const pct = denom === 0 ? 100 : (agreement / denom) * 100;
   return { agreement, disagreement, pct };
 }
 
